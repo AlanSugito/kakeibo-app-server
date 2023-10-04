@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String        @id @default(uuid())
+  first_name      String        @db.VarChar(30)
+  last_name       String?       @db.VarChar(30)
+  email           String        @unique @db.VarChar(150)
+  profile_picture String?       @default("avatar.png")
+  balance         Int?          @default(0) @db.Int
+  token           String?       @db.Text
+  password        String        @db.VarChar(200)
+  incomes         Income[]
+  expenses        Expense[]
+  categories      Category[]
+  expenseType     ExpenseType[]
+}
+
+model Income {
+  id          String @id @default(uuid())
+  nominal     Int    @db.Int
+  information String @db.Text
+  date        Int    @db.Int
+  month       String @db.VarChar(10)
+  year        Int    @db.Int
+  user_id     String
+  user        User   @relation(fields: [user_id], references: [id])
+}
+
+model Expense {
+  id              String      @id @default(uuid())
+  nominal         Int         @db.Int
+  information     String      @db.Text
+  date            Int         @db.Int
+  month           String      @db.VarChar(10)
+  year            Int         @db.Int
+  category_id     String
+  expense_type_id String
+  user_id         String
+  user            User        @relation(fields: [user_id], references: [id])
+  category        Category    @relation(fields: [category_id], references: [id])
+  expenseType     ExpenseType @relation(fields: [expense_type_id], references: [id])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(25)
+  description String    @db.Text
+  user_id     String
+  expenses    Expense[]
+  user        User      @relation(fields: [user_id], references: [id])
+}
+
+model ExpenseType {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(25)
+  description String    @db.Text
+  user_id     String
+  expenses    Expense[]
+  user        User      @relation(fields: [user_id], references: [id])
+}
