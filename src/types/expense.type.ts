@@ -1,9 +1,18 @@
 interface IExpense {
   date: string | Date;
-  nominals: number;
+  nominal: number;
   category_id: string;
   expense_type_id: string;
   information: string;
 }
 
-export type { IExpense };
+interface IExpenseQuery {
+  month?: string;
+  years?: number;
+  categories?: string[];
+  expenseTypes?: string[];
+  page?: number;
+  search?: string;
+}
+
+export type { IExpense, IExpenseQuery };

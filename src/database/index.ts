@@ -1,3 +1,5 @@
 import User from "./User";
+import Income from "./Income";
+import Expense from "./Expense";
 
-export { User };
+export { User, Income, Expense };

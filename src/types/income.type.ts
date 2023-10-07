@@ -4,4 +4,11 @@ interface IIncome {
   information: string;
 }
 
-export type { IIncome };
+interface IIncomeQuery {
+  month?: string;
+  year?: number;
+  page?: number;
+  search?: string;
+}
+
+export type { IIncome, IIncomeQuery };

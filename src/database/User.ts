@@ -5,18 +5,6 @@ import { APIError } from "../utils";
 class User {
   private user = prisma.user;
 
-  private throw(error: unknown) {
-    if (error instanceof Error) {
-      logger.error(error.message);
-    }
-
-    if (error instanceof APIError) {
-      throw new APIError(error.status, error.message);
-    }
-
-    throw new APIError(500, "Internal Server Error");
-  }
-
   async getUserById(id: string) {
     try {
       const user = await this.user.findFirst({
@@ -29,13 +17,14 @@ class User {
           profile_picture: true,
         },
       });
+
       if (!user) {
         throw new APIError(404, "user not found");
       }
 
       return user;
     } catch (error) {
-      throw this.throw(error);
+      throw APIError.throw(error);
     }
   }
 
@@ -57,7 +46,7 @@ class User {
 
       return user;
     } catch (error) {
-      throw this.throw(error);
+      throw APIError.throw(error);
     }
   }
 
@@ -72,7 +61,44 @@ class User {
       logger.info("User registered");
       return result;
     } catch (error) {
-      throw this.throw(error);
+      throw APIError.throw(error);
+    }
+  }
+
+  async addBalance(id: string, nominal: number) {
+    try {
+      const user = await this.user.findFirst({ where: { id } });
+
+      if (!user) throw new APIError(404, "user not found");
+
+      const result = await this.user.update({
+        where: { id },
+        data: {
+          balance: user.balance! + nominal,
+        },
+      });
+
+      return result;
+    } catch (error) {
+      throw APIError.throw(error);
+    }
+  }
+  async cutBalance(id: string, nominal: number) {
+    try {
+      const user = await this.user.findFirst({ where: { id } });
+
+      if (!user) throw new APIError(404, "user not found");
+
+      const result = await this.user.update({
+        where: { id },
+        data: {
+          balance: user.balance! - nominal,
+        },
+      });
+
+      return result;
+    } catch (error) {
+      throw APIError.throw(error);
     }
   }
 
@@ -89,7 +115,7 @@ class User {
 
       return result;
     } catch (error) {
-      throw this.throw(error);
+      throw APIError.throw(error);
     }
   }
 
@@ -98,7 +124,7 @@ class User {
       await this.user.delete({ where: { id } });
       return true;
     } catch (error) {
-      throw this.throw(error);
+      throw APIError.throw(error);
     }
   }
 }

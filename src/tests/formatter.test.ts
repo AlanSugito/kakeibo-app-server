@@ -9,6 +9,14 @@ describe("Formatter", () => {
     expect(dates).toHaveProperty("month");
     expect(dates).toHaveProperty("year");
     expect(dates).toEqual({ day: 4, month: "Oktober", year: 2023 });
+
+    const datesFromString = Formatter.splitDate("03-10-2023");
+    expect(datesFromString).toBeDefined();
+    expect(datesFromString).not.toBeNull();
+    expect(datesFromString).toHaveProperty("day");
+    expect(datesFromString).toHaveProperty("month");
+    expect(datesFromString).toHaveProperty("year");
+    expect(datesFromString).toEqual({ day: 10, month: "Maret", year: 2023 });
   });
 
   const formattedDate = Formatter.formatDate(new Date("10/04/2023"));
