@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import Formatter from "../utils/Formatter";
+import Formatter from "../../utils/Formatter";
 
 describe("Formatter", () => {
   const dates = Formatter.splitDate(new Date("10/04/2023"));

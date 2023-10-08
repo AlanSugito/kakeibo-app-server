@@ -55,9 +55,11 @@ query(optional):
   "years": Number,
   "categories": String[],
   "expenseTypes": String[],
-  "page": Number,
+  "page": Number, 
   "search": String
 }
+
+note: page start at 0
 ```
 
 response:

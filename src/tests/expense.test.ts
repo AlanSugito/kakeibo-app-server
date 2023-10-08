@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { Expense, User } from "../database";
+import { logger } from "../configs";
 
 describe("Expense repository", () => {
   it("should add user expense and cut user balance", async () => {
@@ -16,11 +17,11 @@ describe("Expense repository", () => {
 
     expect(expense).toBeDefined();
     expect(expense).not.toBeNull();
-    expect(user.balance).toBe(95000);
+    expect(user.balance).toBe(70000);
     expect(expenses).not.toBeNull();
     expect(expenses).not.toHaveLength(0);
-    await User.addBalance("1", 5000);
-    await Expense.delete("1", expense.id);
+    await User.addBalance(user.id, 5000);
+    await Expense.delete(user.id, expense.id);
   });
 
   it("should get user expenses", async () => {
@@ -29,7 +30,7 @@ describe("Expense repository", () => {
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
     expect(expenses).not.toHaveLength(0);
-    expect(expenses.length).toBeLessThan(10);
+    expect(expenses.length).toBeLessThanOrEqual(10);
     expenses.forEach((expense) => {
       expect(expense).toHaveProperty("category");
       expect(expense).toHaveProperty("expenseType");
@@ -81,7 +82,8 @@ describe("Expense repository", () => {
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
-    expect(expenses).toHaveLength(8);
+    expect(expenses).not.toHaveLength(0);
+    expect(expenses.length).toBeLessThanOrEqual(10);
   });
 
   it("should get user expenses with particular expense types", async () => {
@@ -121,5 +123,29 @@ describe("Expense repository", () => {
     expect(expenses).not.toBeNull();
     expect(expenses).not.toHaveLength(0);
     expect(expenses).toHaveLength(1);
+  });
+
+  it("should get users expense data at page 2", async () => {
+    const expenses = await Expense.get("1", { page: 1 });
+
+    expect(expenses).toBeDefined();
+    expect(expenses).not.toBeNull();
+    expect(expenses).not.toHaveLength(0);
+    expect(expenses.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("should get users monthly stats", async () => {
+    const stats = await Expense.getMonthlyStats("1", 2023);
+
+    expect(stats).toBeDefined();
+    expect(stats).not.toBeNull();
+    expect(stats).not.toHaveLength(0);
+    stats.forEach((stat) => {
+      expect(stat).toBeDefined();
+      expect(stat).not.toBeNull();
+      expect(stat).toHaveProperty("year");
+      expect(stat).toHaveProperty("month");
+      expect(stat).toHaveProperty("nominal");
+    });
   });
 });

@@ -52,11 +52,40 @@ class Expense {
           category: { select: { name: true } },
           expenseType: { select: { name: true } },
         },
+        orderBy: [
+          {
+            date: "asc",
+          },
+          {
+            year: "asc",
+          },
+        ],
         skip: query.page ? query.page * dataPerPage : 0,
         take: dataPerPage,
       });
 
       return expenses;
+    } catch (error) {
+      throw APIError.throw(error);
+    }
+  }
+
+  async getMonthlyStats(userId: string, year: number) {
+    try {
+      const isUserExist = await checkUser(userId);
+
+      if (!isUserExist) throw new APIError(404, "user not found");
+
+      const data = await this.expenses.findMany({
+        where: { user_id: userId, year },
+        select: {
+          month: true,
+          year: true,
+          nominal: true,
+        },
+      });
+
+      return data;
     } catch (error) {
       throw APIError.throw(error);
     }

@@ -42,6 +42,14 @@ class Income {
           month: query.month,
           year: query.year,
         },
+        orderBy: [
+          {
+            date: "asc",
+          },
+          {
+            year: "asc",
+          },
+        ],
         skip: query.page ? query.page * dataPerPage : 0,
         take: dataPerPage,
       });
