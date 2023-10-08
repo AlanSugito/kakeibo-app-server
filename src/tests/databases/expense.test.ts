@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { Expense, User } from "../database";
-import { logger } from "../configs";
+import { Expense, User } from "../../database";
+import { logger } from "../../configs";
 
 describe("Expense repository", () => {
   it("should add user expense and cut user balance", async () => {

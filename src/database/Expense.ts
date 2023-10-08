@@ -22,12 +22,12 @@ class Expense {
       try {
         await User.cutBalance(userId, data.nominal);
       } catch (error) {
-        throw APIError.throw(error);
+        throw APIError.get(error);
       }
 
       return expense;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -66,7 +66,7 @@ class Expense {
 
       return expenses;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -87,7 +87,7 @@ class Expense {
 
       return data;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -103,7 +103,7 @@ class Expense {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }

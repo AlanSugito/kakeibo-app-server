@@ -24,7 +24,7 @@ class User {
 
       return user;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -46,7 +46,7 @@ class User {
 
       return user;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -61,7 +61,7 @@ class User {
       logger.info("User registered");
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -80,7 +80,7 @@ class User {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
   async cutBalance(id: string, nominal: number) {
@@ -98,7 +98,7 @@ class User {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -115,7 +115,7 @@ class User {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -124,7 +124,7 @@ class User {
       await this.user.delete({ where: { id } });
       return true;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }

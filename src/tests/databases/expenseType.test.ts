@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
-import { ExpenseType } from "../database";
-import { APIError } from "../utils";
+import { ExpenseType } from "../../database";
+import { APIError } from "../../utils";
 
 describe("Exepense type respository", () => {
   it("should create an expense type", async () => {

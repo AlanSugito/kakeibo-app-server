@@ -18,7 +18,7 @@ class ExpenseType {
 
       return expenseType;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -38,7 +38,7 @@ class ExpenseType {
 
       return expenseTypes;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -57,7 +57,7 @@ class ExpenseType {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -75,7 +75,7 @@ class ExpenseType {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }

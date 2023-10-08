@@ -1,6 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import { Category } from "../database";
-import { logger } from "../configs";
+import { Category } from "../../database";
 
 describe("Category repository", () => {
   it("should add new category", async () => {

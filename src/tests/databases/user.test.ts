@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
-import { User } from "../database";
-import { APIError } from "../utils";
-import { logger } from "../configs";
+import { User } from "../../database";
+import { APIError } from "../../utils";
+import { logger } from "../../configs";
 
 describe("User repository", () => {
   it("should get a user data", async () => {

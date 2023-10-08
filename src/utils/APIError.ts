@@ -8,16 +8,16 @@ class APIError extends Error {
     this.status = status;
   }
 
-  static throw(error: unknown) {
+  static get(error: unknown) {
     if (error instanceof Error) {
       logger.error(error.message);
     }
 
     if (error instanceof APIError) {
-      throw new APIError(error.status, error.message);
+      return new APIError(error.status, error.message);
     }
 
-    throw new APIError(500, "Internal Server Error");
+    return new APIError(500, "Internal Server Error");
   }
 }
 

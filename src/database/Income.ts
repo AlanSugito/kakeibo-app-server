@@ -23,7 +23,7 @@ class Income {
 
       return income;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -56,7 +56,7 @@ class Income {
 
       return incomes;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -77,7 +77,7 @@ class Income {
       const average = totalValue / MONTHS_IN_A_YEAR;
       return average;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -98,7 +98,7 @@ class Income {
 
       return incomes;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -116,7 +116,7 @@ class Income {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }
