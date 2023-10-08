@@ -6,6 +6,19 @@ import { checkUser } from "./utils";
 class Category {
   private categories = prisma.category;
 
+  private async checkCategory(categoryId: string) {
+    try {
+      const category = await this.categories.findFirst({
+        where: { id: categoryId },
+      });
+
+      if (!category) return false;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async create(data: ICategory) {
     try {
       const isUserExist = await checkUser(data.user_id);
@@ -18,7 +31,7 @@ class Category {
 
       return category;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -41,15 +54,17 @@ class Category {
 
       return categories;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
   async update(categoryId: string, data: ICategory) {
     try {
       const isUserExist = await checkUser(data.user_id);
+      const isCategoryExist = await this.checkCategory(categoryId);
 
-      if (!isUserExist) throw new APIError(404, "user not found");
+      if (!isUserExist || !isCategoryExist)
+        throw new APIError(404, "data not found");
 
       const result = await this.categories.update({
         where: { user_id: data.user_id, id: categoryId },
@@ -58,19 +73,22 @@ class Category {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
   async delete(categoryId: string) {
     try {
+      const isCategoryExist = await this.checkCategory(categoryId);
+
+      if (!isCategoryExist) throw new APIError(404, "category not found");
       const result = await this.categories.delete({
         where: { id: categoryId },
       });
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }

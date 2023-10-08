@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
-import { Income } from "../database";
-import { APIError } from "../utils";
+import { Income } from "../../database";
+import { APIError } from "../../utils";
 
 describe("Income repository", () => {
   it("should add a user's income", async () => {

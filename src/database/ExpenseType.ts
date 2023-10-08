@@ -6,6 +6,20 @@ import { checkUser } from "./utils";
 class ExpenseType {
   private expenseTypes = prisma.expenseType;
 
+  private async checkExpenseType(typeId: string) {
+    try {
+      const expenseType = await this.expenseTypes.findFirst({
+        where: { id: typeId },
+      });
+
+      if (!expenseType) return false;
+
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async create(data: IExpenseType) {
     try {
       const isUserExist = await checkUser(data.user_id);
@@ -18,7 +32,7 @@ class ExpenseType {
 
       return expenseType;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
@@ -38,17 +52,16 @@ class ExpenseType {
 
       return expenseTypes;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
   async update(typeId: string, data: IExpenseType) {
     try {
-      const expenseType = await this.expenseTypes.findFirst({
-        where: { id: typeId },
-      });
+      const isExpenseTypeExist = await this.checkExpenseType(typeId);
 
-      if (!expenseType) throw new APIError(404, "expense type not found");
+      if (!isExpenseTypeExist)
+        throw new APIError(404, "expense type not found");
 
       const result = await this.expenseTypes.update({
         where: { id: typeId },
@@ -57,17 +70,16 @@ class ExpenseType {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 
   async delete(typeId: string) {
     try {
-      const expenseType = await this.expenseTypes.findFirst({
-        where: { id: typeId },
-      });
+      const isExpenseTypeExist = await this.checkExpenseType(typeId);
 
-      if (!expenseType) throw new APIError(404, "expense type not found");
+      if (!isExpenseTypeExist)
+        throw new APIError(404, "expense type not found");
 
       const result = await this.expenseTypes.delete({
         where: { id: typeId },
@@ -75,7 +87,7 @@ class ExpenseType {
 
       return result;
     } catch (error) {
-      throw APIError.throw(error);
+      throw APIError.get(error);
     }
   }
 }
