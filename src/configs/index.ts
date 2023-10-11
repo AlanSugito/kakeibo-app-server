@@ -1,6 +1,6 @@
 import logger from "./logger";
-import startServer from "./server";
+import server from "./server";
 import prisma from "./prisma";
 import storage from "./storage";
 
-export { logger, startServer, prisma, storage };
+export { logger, server, prisma, storage };

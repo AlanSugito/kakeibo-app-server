@@ -1,6 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
 import { Expense, User } from "../../database";
-import { logger } from "../../configs";
 
 describe("Expense repository", () => {
   it("should add user expense and cut user balance", async () => {
@@ -11,13 +10,13 @@ describe("Expense repository", () => {
       information: "Buy an food",
       nominal: 5000,
     });
-    const expenses = await Expense.get("1");
+    const { expenses } = await Expense.get("1");
 
     const user = await User.getUserById("1");
 
     expect(expense).toBeDefined();
     expect(expense).not.toBeNull();
-    expect(user.balance).toBe(70000);
+    expect(user.balance).toBe(50000);
     expect(expenses).not.toBeNull();
     expect(expenses).not.toHaveLength(0);
     await User.addBalance(user.id, 5000);
@@ -25,7 +24,7 @@ describe("Expense repository", () => {
   });
 
   it("should get user expenses", async () => {
-    const expenses = await Expense.get("1");
+    const { expenses } = await Expense.get("1");
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
@@ -39,9 +38,27 @@ describe("Expense repository", () => {
     });
   });
 
-  it("should get user expenses with search query", async () => {
-    const expenses = await Expense.get("1", { search: "oreo" });
+  it("should get user biggest expenses", async () => {
+    const result = await Expense.getBiggestExpenses("1");
 
+    expect(result).toBeDefined();
+    expect(result).not.toBeNull();
+    expect(result).toBe(5000);
+  });
+
+  it("should get user average spent in a month", async () => {
+    const result = await Expense.getAverageSpent("1", 2023);
+
+    expect(result).toBeDefined();
+    expect(result).not.toBeNull();
+    expect(result).toBeGreaterThanOrEqual(4764);
+  });
+
+  it("should get user expenses with search query", async () => {
+    const { expenses } = await Expense.get("1", { search: "oreo" });
+
+    expect(expenses).toBeDefined();
+    expect(expenses).not.toBeNull();
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
     expect(expenses).not.toHaveLength(0);
@@ -49,7 +66,7 @@ describe("Expense repository", () => {
   });
 
   it("should get user expenses with particular years", async () => {
-    const expenses = await Expense.get("1", { years: 2022 });
+    const { expenses } = await Expense.get("1", { years: 2022 });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
@@ -57,7 +74,7 @@ describe("Expense repository", () => {
   });
 
   it("should get user expenses with particular month", async () => {
-    const expenses = await Expense.get("1", { month: "Januari" });
+    const { expenses } = await Expense.get("1", { month: "Januari" });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
@@ -65,20 +82,23 @@ describe("Expense repository", () => {
   });
 
   it("should get user expenses with particular month and years", async () => {
-    const expenses = await Expense.get("1", { month: "Januari", years: 2022 });
+    const { expenses } = await Expense.get("1", {
+      month: "Januari",
+      years: 2022,
+    });
     const expenses2 = await Expense.get("1", { month: "Januari", years: 2023 });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
     expect(expenses).toHaveLength(2);
 
-    expect(expenses2).toBeDefined();
-    expect(expenses2).not.toBeNull();
-    expect(expenses2).toHaveLength(0);
+    expect(expenses2.expenses).toBeDefined();
+    expect(expenses2.expenses).not.toBeNull();
+    expect(expenses2.expenses).toHaveLength(0);
   });
 
   it("should get user expenses with particular categories", async () => {
-    const expenses = await Expense.get("1", { categories: ["1", "2"] });
+    const { expenses } = await Expense.get("1", { categories: ["1", "2"] });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
@@ -87,20 +107,20 @@ describe("Expense repository", () => {
   });
 
   it("should get user expenses with particular expense types", async () => {
-    const expenses = await Expense.get("1", { expenseTypes: ["2"] });
+    const { expenses } = await Expense.get("1", { expenseTypes: ["2"] });
     const expenses2 = await Expense.get("1", { expenseTypes: ["3"] });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();
     expect(expenses).toHaveLength(2);
 
-    expect(expenses2).toBeDefined();
-    expect(expenses2).not.toBeNull();
-    expect(expenses2).toHaveLength(0);
+    expect(expenses2.expenses).toBeDefined();
+    expect(expenses2.expenses).not.toBeNull();
+    expect(expenses2.expenses).toHaveLength(0);
   });
 
   it("should get user expenses with particular expense types and categories", async () => {
-    const expenses = await Expense.get("1", {
+    const { expenses } = await Expense.get("1", {
       expenseTypes: ["2"],
       categories: ["1"],
     });
@@ -110,8 +130,21 @@ describe("Expense repository", () => {
     expect(expenses).toHaveLength(2);
   });
 
+  it("should get user expense category stats", async () => {
+    const result = await Expense.getSpentCategories("1", "Oktober", 2023);
+
+    expect(result).toBeDefined();
+    expect(result).not.toBeNull();
+    expect(result).not.toHaveLength(0);
+    result.forEach((res) => {
+      expect(res).toBeDefined();
+      expect(res).not.toBeNull();
+      expect(res.category).toHaveProperty("name");
+    });
+  });
+
   it("should get user expenses with all filters", async () => {
-    const expenses = await Expense.get("1", {
+    const { expenses } = await Expense.get("1", {
       search: "siomay",
       years: 2022,
       month: "Januari",
@@ -126,7 +159,7 @@ describe("Expense repository", () => {
   });
 
   it("should get users expense data at page 2", async () => {
-    const expenses = await Expense.get("1", { page: 1 });
+    const { expenses } = await Expense.get("1", { page: 1 });
 
     expect(expenses).toBeDefined();
     expect(expenses).not.toBeNull();

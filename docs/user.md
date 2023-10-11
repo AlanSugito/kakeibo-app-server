@@ -23,7 +23,10 @@ response:
     "average_spent_in_a_month": 100000,
     "biggest_expenses": 30000000,
     "stats": {
-      "this_month_expenses": [100,200],
+      "this_month_expenses": {
+        "dates": [1, 2, 3],
+        "values": [100, 200, 300]
+      },
       "most_spent_categories": {
         "foods": [131, 13],
         "drinks": [121, 1212,132],

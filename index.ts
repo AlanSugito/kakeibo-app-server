@@ -1,3 +1,5 @@
-import { startServer } from "./src/configs";
+import { logger, server } from "./src/configs";
 
-startServer()
+const PORT = 4000;
+
+server.listen(PORT, () => logger.info(`Server running at port: ${PORT}`));

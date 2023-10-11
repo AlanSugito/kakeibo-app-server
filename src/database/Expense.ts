@@ -64,7 +64,12 @@ class Expense {
         take: dataPerPage,
       });
 
-      return expenses;
+      const total = await this.expenses.aggregate({
+        _sum: { nominal: true },
+        where: { year: query.years, month: query.month },
+      });
+
+      return { expenses, total: Math.round(total._sum.nominal as number) };
     } catch (error) {
       throw APIError.get(error);
     }
@@ -86,6 +91,61 @@ class Expense {
       });
 
       return data;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async getCurrentMonthExpenses(userId: string, year: number) {
+    try {
+      const expenses = await this.expenses.findMany({
+        where: { user_id: userId, year },
+        select: {
+          date: true,
+          nominal: true,
+        },
+      });
+
+      return expenses;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async getSpentCategories(userId: string, month: string, year: number) {
+    try {
+      const categories = this.expenses.findMany({
+        where: { month, year, user_id: userId },
+        select: { category: { select: { name: true } } },
+      });
+
+      return categories;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async getAverageSpent(userId: string, year: number) {
+    try {
+      const result = await this.expenses.aggregate({
+        where: { year, user_id: userId },
+        _avg: { nominal: true },
+      });
+
+      return Math.round(result._avg.nominal as number);
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async getBiggestExpenses(userId: string) {
+    try {
+      const result = await this.expenses.aggregate({
+        where: { user_id: userId },
+        _max: { nominal: true },
+      });
+
+      return result._max.nominal;
     } catch (error) {
       throw APIError.get(error);
     }

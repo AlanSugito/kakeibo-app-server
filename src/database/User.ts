@@ -1,5 +1,5 @@
 import { logger, prisma } from "../configs";
-import { ICredentials } from "../types";
+import { IRegisterCredentials } from "../types";
 import { APIError } from "../utils";
 
 class User {
@@ -50,7 +50,7 @@ class User {
     }
   }
 
-  async save(data: ICredentials) {
+  async save(data: IRegisterCredentials) {
     try {
       const result = await this.user.create({
         data,

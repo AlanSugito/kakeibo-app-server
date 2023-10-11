@@ -1,8 +1,8 @@
-import { logger, prisma } from "../configs";
-import { IIncome, IIncomeQuery } from "../types";
-import { APIError } from "../utils";
 import Formatter from "../utils/Formatter";
 import User from "./User";
+import { prisma } from "../configs";
+import { IIncome, IIncomeQuery } from "../types";
+import { APIError } from "../utils";
 import { checkUser } from "./utils";
 
 class Income {
@@ -66,15 +66,13 @@ class Income {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const incomes = await this.income.findMany({
-        where: { year, user_id: userId },
-        select: { nominal: true },
+      const result = await this.income.aggregate({
+        where: { user_id: userId, year },
+        _avg: {
+          nominal: true,
+        },
       });
-
-      const nominals = incomes.map((income) => income.nominal);
-      const totalValue = nominals.reduce((a, b) => a + b, 0);
-      const MONTHS_IN_A_YEAR = 12;
-      const average = totalValue / MONTHS_IN_A_YEAR;
+      const average = Math.round(result._avg.nominal!);
       return average;
     } catch (error) {
       throw APIError.get(error);

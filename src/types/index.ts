@@ -4,6 +4,7 @@ import { IExpense, IExpenseQuery } from "./expense.type";
 import { IIncome, IIncomeQuery } from "./income.type";
 import { ICategory, ICategoryQuery } from "./category.type";
 import { IExpenseType, IExpenseTypeQuery } from "./expenseType.type";
+import { IResponse, IErrorResponse } from "./response.type";
 
 export type {
   IProfile,
@@ -17,4 +18,6 @@ export type {
   IIncomeQuery,
   IExpenseType,
   IExpenseTypeQuery,
+  IResponse,
+  IErrorResponse,
 };
