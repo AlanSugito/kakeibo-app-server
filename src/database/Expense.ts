@@ -96,6 +96,25 @@ class Expense {
     }
   }
 
+  async getByDates(userId: string, from: Date, to: Date) {
+    try {
+      const isUserExist = await checkUser(userId);
+
+      if (!isUserExist) throw new APIError(404, "user not found");
+
+      const expenses = await this.expenses.findMany({
+        where: {
+          user_id: userId,
+          created_at: { gte: from, lte: to },
+        },
+      });
+
+      return expenses;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
   async getCurrentMonthExpenses(userId: string, year: number) {
     try {
       const expenses = await this.expenses.findMany({

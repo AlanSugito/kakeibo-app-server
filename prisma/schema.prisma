@@ -23,17 +23,19 @@ model User {
   expenses        Expense[]
   categories      Category[]
   expenseType     ExpenseType[]
+  created_at      DateTime      @default(now()) @db.DateTime(3)
 }
 
 model Income {
-  id          String @id @default(uuid())
-  nominal     Int    @db.Int
-  information String @db.Text
-  date        Int    @db.Int
-  month       String @db.VarChar(10)
-  year        Int    @db.Int
+  id          String   @id @default(uuid())
+  nominal     Int      @db.Int
+  information String   @db.Text
+  date        Int      @db.Int
+  month       String   @db.VarChar(10)
+  year        Int      @db.Int
   user_id     String
-  user        User   @relation(fields: [user_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+  created_at  DateTime @default(now()) @db.DateTime(3)
 }
 
 model Expense {
@@ -49,6 +51,7 @@ model Expense {
   user            User        @relation(fields: [user_id], references: [id])
   category        Category    @relation(fields: [category_id], references: [id])
   expenseType     ExpenseType @relation(fields: [expense_type_id], references: [id])
+  created_at      DateTime    @default(now()) @db.DateTime(3)
 }
 
 model Category {
@@ -58,6 +61,7 @@ model Category {
   user_id     String
   expenses    Expense[]
   user        User      @relation(fields: [user_id], references: [id])
+  created_at  DateTime  @default(now()) @db.DateTime(3)
 }
 
 model ExpenseType {
@@ -67,4 +71,5 @@ model ExpenseType {
   user_id     String
   expenses    Expense[]
   user        User      @relation(fields: [user_id], references: [id])
+  created_at  DateTime  @default(now()) @db.DateTime(3)
 }

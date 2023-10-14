@@ -1,7 +1,7 @@
 import Formatter from "../utils/Formatter";
 import User from "./User";
 import { prisma } from "../configs";
-import { IIncome, IIncomeQuery } from "../types";
+import { IDate, IIncome, IIncomeQuery } from "../types";
 import { APIError } from "../utils";
 import { checkUser } from "./utils";
 
@@ -74,6 +74,25 @@ class Income {
       });
       const average = Math.round(result._avg.nominal!);
       return average;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async getByDate(userId: string, from: Date, to: Date) {
+    try {
+      const isUserExist = await checkUser(userId);
+
+      if (!isUserExist) throw new APIError(404, "user not found");
+
+      const incomes = await this.income.findMany({
+        where: {
+          user_id: userId,
+          created_at: { gte: from, lte: to },
+        },
+      });
+
+      return incomes;
     } catch (error) {
       throw APIError.get(error);
     }
