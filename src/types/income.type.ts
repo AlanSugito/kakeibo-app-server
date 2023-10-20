@@ -2,6 +2,7 @@ interface IIncome {
   date: Date | string;
   nominal: number;
   information: string;
+  created_at?: Date;
 }
 
 interface IIncomeQuery {

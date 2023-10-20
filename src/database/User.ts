@@ -3,11 +3,13 @@ import { IRegisterCredentials } from "../types";
 import { APIError } from "../utils";
 
 class User {
-  private user = prisma.user;
-
   async getUserById(id: string) {
     try {
-      const user = await this.user.findFirst({
+      if (!id) {
+        throw new APIError(400, "user id is required");
+      }
+
+      const user = await prisma.user.findFirst({
         where: { id },
         select: {
           id: true,
@@ -28,10 +30,10 @@ class User {
     }
   }
 
-  async getUserCredentials(id: string) {
+  async getUserCredentials(email: string) {
     try {
-      const user = await this.user.findFirst({
-        where: { id },
+      const user = await prisma.user.findFirst({
+        where: { email },
         select: {
           id: true,
           email: true,
@@ -52,7 +54,7 @@ class User {
 
   async save(data: IRegisterCredentials) {
     try {
-      const result = await this.user.create({
+      const result = await prisma.user.create({
         data,
         select: {
           id: true,
@@ -67,11 +69,11 @@ class User {
 
   async addBalance(id: string, nominal: number) {
     try {
-      const user = await this.user.findFirst({ where: { id } });
+      const user = await prisma.user.findFirst({ where: { id } });
 
       if (!user) throw new APIError(404, "user not found");
 
-      const result = await this.user.update({
+      const result = await prisma.user.update({
         where: { id },
         data: {
           balance: user.balance! + nominal,
@@ -85,11 +87,11 @@ class User {
   }
   async cutBalance(id: string, nominal: number) {
     try {
-      const user = await this.user.findFirst({ where: { id } });
+      const user = await prisma.user.findFirst({ where: { id } });
 
       if (!user) throw new APIError(404, "user not found");
 
-      const result = await this.user.update({
+      const result = await prisma.user.update({
         where: { id },
         data: {
           balance: user.balance! - nominal,
@@ -104,7 +106,7 @@ class User {
 
   async updateProfilePicture(id: string, filename: string) {
     try {
-      const result = await this.user.update({
+      const result = await prisma.user.update({
         where: { id },
         data: { profile_picture: filename },
       });
@@ -121,7 +123,7 @@ class User {
 
   async deleteById(id: string) {
     try {
-      await this.user.delete({ where: { id } });
+      await prisma.user.delete({ where: { id } });
       return true;
     } catch (error) {
       throw APIError.get(error);

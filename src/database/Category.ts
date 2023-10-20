@@ -4,11 +4,9 @@ import { APIError } from "../utils";
 import { checkUser } from "./utils";
 
 class Category {
-  private categories = prisma.category;
-
   private async checkCategory(categoryId: string) {
     try {
-      const category = await this.categories.findFirst({
+      const category = await prisma.category.findFirst({
         where: { id: categoryId },
       });
 
@@ -25,7 +23,7 @@ class Category {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const category = await this.categories.create({
+      const category = await prisma.category.create({
         data,
       });
 
@@ -42,7 +40,7 @@ class Category {
       if (!isUserExist) throw new APIError(404, "user not found");
 
       const dataPerPage = 10;
-      const categories = await this.categories.findMany({
+      const categories = await prisma.category.findMany({
         where: {
           OR: [
             { user_id: userId, description: { contains: query.search } },
@@ -66,7 +64,7 @@ class Category {
       if (!isUserExist || !isCategoryExist)
         throw new APIError(404, "data not found");
 
-      const result = await this.categories.update({
+      const result = await prisma.category.update({
         where: { user_id: data.user_id, id: categoryId },
         data,
       });
@@ -82,7 +80,7 @@ class Category {
       const isCategoryExist = await this.checkCategory(categoryId);
 
       if (!isCategoryExist) throw new APIError(404, "category not found");
-      const result = await this.categories.delete({
+      const result = await prisma.category.delete({
         where: { id: categoryId },
       });
 

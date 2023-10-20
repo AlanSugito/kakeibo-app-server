@@ -41,16 +41,30 @@ body:
 ```
 response:
 
+cookie: 
+
+```json
+{
+  "rt": $refreshToken
+}
+```
+
 status 200:
 ```json
 {
   "message": "Successfully logged in",
   "data": {
-    "user_id": "1",
     "access_token": "token",
-    "refresh_token": "token",
   }
   
+}
+```
+
+status 400:
+
+```json
+{
+  "message": "Email or Password is not valid"
 }
 ```
 
@@ -90,6 +104,8 @@ status 401:
   "data": null
 }
 ```
+
+EndpointL /logout
 
 
 

@@ -4,11 +4,9 @@ import { APIError } from "../utils";
 import { checkUser } from "./utils";
 
 class ExpenseType {
-  private expenseTypes = prisma.expenseType;
-
   private async checkExpenseType(typeId: string) {
     try {
-      const expenseType = await this.expenseTypes.findFirst({
+      const expenseType = await prisma.expenseType.findFirst({
         where: { id: typeId },
       });
 
@@ -26,7 +24,7 @@ class ExpenseType {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const expenseType = await this.expenseTypes.create({
+      const expenseType = await prisma.expenseType.create({
         data,
       });
 
@@ -41,7 +39,7 @@ class ExpenseType {
       const isUserExist = await checkUser(userId);
 
       if (!isUserExist) throw new APIError(404, "user not found");
-      const expenseTypes = this.expenseTypes.findMany({
+      const expenseTypes = prisma.expenseType.findMany({
         where: {
           OR: [
             { user_id: userId, description: { contains: query.search } },
@@ -63,7 +61,7 @@ class ExpenseType {
       if (!isExpenseTypeExist)
         throw new APIError(404, "expense type not found");
 
-      const result = await this.expenseTypes.update({
+      const result = await prisma.expenseType.update({
         where: { id: typeId },
         data,
       });
@@ -81,7 +79,7 @@ class ExpenseType {
       if (!isExpenseTypeExist)
         throw new APIError(404, "expense type not found");
 
-      const result = await this.expenseTypes.delete({
+      const result = await prisma.expenseType.delete({
         where: { id: typeId },
       });
 

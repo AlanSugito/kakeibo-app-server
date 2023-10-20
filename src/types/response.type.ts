@@ -1,6 +1,6 @@
-interface IResponse<T> {
+interface IResponse<T = any> {
   message: string;
-  data: T | null;
+  data?: T;
 }
 
 interface IErrorResponse {

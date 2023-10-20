@@ -6,8 +6,6 @@ import User from "./User";
 import { checkUser } from "./utils";
 
 class Expense {
-  private expenses = prisma.expense;
-
   async addExpense(userId: string, data: IExpense) {
     try {
       const isUserExist = await checkUser(userId);
@@ -15,7 +13,7 @@ class Expense {
       if (!isUserExist) throw new APIError(404, "user not found");
 
       const { day, month, year } = Formatter.splitDate(new Date(data.date));
-      const expense = await this.expenses.create({
+      const expense = await prisma.expense.create({
         data: { ...data, month, year, date: day, user_id: userId },
       });
 
@@ -39,7 +37,7 @@ class Expense {
 
       const dataPerPage: number = 10;
 
-      const expenses = await this.expenses.findMany({
+      const expenses = await prisma.expense.findMany({
         where: {
           user_id: userId,
           information: { contains: query.search },
@@ -64,12 +62,20 @@ class Expense {
         take: dataPerPage,
       });
 
-      const total = await this.expenses.aggregate({
+      const total = await prisma.expense.aggregate({
         _sum: { nominal: true },
         where: { year: query.years, month: query.month },
       });
 
-      return { expenses, total: Math.round(total._sum.nominal as number) };
+      const totalRecords = await prisma.expense.count({
+        where: { user_id: userId },
+      });
+
+      return {
+        expenses,
+        totalRecords,
+        total: Math.round(total._sum.nominal as number),
+      };
     } catch (error) {
       throw APIError.get(error);
     }
@@ -81,7 +87,7 @@ class Expense {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const data = await this.expenses.findMany({
+      const data = await prisma.expense.findMany({
         where: { user_id: userId, year },
         select: {
           month: true,
@@ -102,7 +108,7 @@ class Expense {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const expenses = await this.expenses.findMany({
+      const expenses = await prisma.expense.findMany({
         where: {
           user_id: userId,
           created_at: { gte: from, lte: to },
@@ -117,7 +123,7 @@ class Expense {
 
   async getCurrentMonthExpenses(userId: string, year: number) {
     try {
-      const expenses = await this.expenses.findMany({
+      const expenses = await prisma.expense.findMany({
         where: { user_id: userId, year },
         select: {
           date: true,
@@ -133,7 +139,7 @@ class Expense {
 
   async getSpentCategories(userId: string, month: string, year: number) {
     try {
-      const categories = this.expenses.findMany({
+      const categories = prisma.expense.findMany({
         where: { month, year, user_id: userId },
         select: { category: { select: { name: true } } },
       });
@@ -146,7 +152,7 @@ class Expense {
 
   async getAverageSpent(userId: string, year: number) {
     try {
-      const result = await this.expenses.aggregate({
+      const result = await prisma.expense.aggregate({
         where: { year, user_id: userId },
         _avg: { nominal: true },
       });
@@ -159,7 +165,7 @@ class Expense {
 
   async getBiggestExpenses(userId: string) {
     try {
-      const result = await this.expenses.aggregate({
+      const result = await prisma.expense.aggregate({
         where: { user_id: userId },
         _max: { nominal: true },
       });
@@ -176,7 +182,7 @@ class Expense {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const result = await this.expenses.delete({
+      const result = await prisma.expense.delete({
         where: { user_id: userId, id: expenseId },
       });
 

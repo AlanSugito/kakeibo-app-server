@@ -1,13 +1,11 @@
 import Formatter from "../utils/Formatter";
 import User from "./User";
 import { prisma } from "../configs";
-import { IDate, IIncome, IIncomeQuery } from "../types";
+import { IIncome, IIncomeQuery } from "../types";
 import { APIError } from "../utils";
 import { checkUser } from "./utils";
 
 class Income {
-  private income = prisma.income;
-
   async addIncome(userId: string, data: IIncome) {
     const isUserExist = await checkUser(userId);
 
@@ -15,7 +13,7 @@ class Income {
 
     const { day, month, year } = Formatter.splitDate(data.date);
     try {
-      const income = await this.income.create({
+      const income = await prisma.income.create({
         data: { ...data, month, year, user_id: userId, date: day },
       });
 
@@ -35,7 +33,7 @@ class Income {
 
       const dataPerPage: number = 10;
 
-      const incomes = await this.income.findMany({
+      const incomes = await prisma.income.findMany({
         where: {
           user_id: userId,
           information: { contains: query.search },
@@ -54,7 +52,20 @@ class Income {
         take: dataPerPage,
       });
 
-      return incomes;
+      const total = await prisma.income.aggregate({
+        _sum: { nominal: true },
+        where: { year: query.year, month: query.month },
+      });
+
+      const totalRecords = await prisma.income.count({
+        where: { user_id: userId },
+      });
+
+      return {
+        incomes,
+        totalRecords,
+        total: Math.round(total._sum.nominal as number),
+      };
     } catch (error) {
       throw APIError.get(error);
     }
@@ -66,7 +77,7 @@ class Income {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const result = await this.income.aggregate({
+      const result = await prisma.income.aggregate({
         where: { user_id: userId, year },
         _avg: {
           nominal: true,
@@ -85,7 +96,7 @@ class Income {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const incomes = await this.income.findMany({
+      const incomes = await prisma.income.findMany({
         where: {
           user_id: userId,
           created_at: { gte: from, lte: to },
@@ -104,7 +115,7 @@ class Income {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const incomes = await this.income.findMany({
+      const incomes = await prisma.income.findMany({
         where: { year, user_id },
         select: {
           month: true,
@@ -125,7 +136,7 @@ class Income {
 
       if (!isUserExist) throw new APIError(404, "user not found");
 
-      const result = await this.income.delete({
+      const result = await prisma.income.delete({
         where: { user_id: userId, id: incomeId },
       });
 

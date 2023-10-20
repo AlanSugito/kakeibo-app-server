@@ -63,7 +63,7 @@ response:
 status 200:
 ```json
   {
-    "message": "Successfully retrive data",
+    "message": "Successfully retrieve data",
     "data": {
       "incomes": [],
       "totals": 20
