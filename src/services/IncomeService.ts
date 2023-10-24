@@ -1,6 +1,6 @@
 import { Income } from "../database";
 import { IIncome, IIncomeQuery, IMonthlyStats } from "../types";
-import { APIError, parseStats } from "../utils";
+import { APIError, Formatter, parseStats, writeExcelFile } from "../utils";
 import { incomeSchema, validate } from "../validations";
 
 class IncomeService {
@@ -30,11 +30,14 @@ class IncomeService {
     }
   }
 
-  async getIncomesByDate(userId: string, from: Date, to: Date) {
+  async getIncomesReport(userId: string, from: Date, to: Date) {
     try {
-      const incomes = await this.incomeRepository.getByDate(userId, from, to);
-
-      return incomes;
+      const incomes = await this.incomeRepository.getByDate("1", from, to);
+      const fileName = `Incomes_${Formatter.formatDate(
+        from
+      )} - ${Formatter.formatDate(to)}.xlsx`;
+      writeExcelFile(incomes, fileName);
+      return fileName;
     } catch (error) {
       throw APIError.get(error);
     }

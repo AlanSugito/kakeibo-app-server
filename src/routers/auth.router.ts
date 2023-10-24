@@ -7,5 +7,6 @@ router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
 router.get("/login/google", AuthController.redirectToOAuth);
 router.get("/login/google/callback", AuthController.loginWithOAuth2);
+router.get("/logout", AuthController.logout);
 
 export default router;

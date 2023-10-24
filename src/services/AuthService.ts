@@ -1,10 +1,4 @@
-import {
-  AT_SECRET,
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  RT_SECRET,
-  oauthClient,
-} from "../configs";
+import { AT_SECRET, RT_SECRET, oauthClient } from "../configs";
 import { User } from "../database";
 import { ILoginCredentials, IRegisterCredentials } from "../types";
 import { APIError, Cryptographer } from "../utils";
@@ -45,6 +39,8 @@ class AuthService {
       const data = { userid: user.id };
       const refreshToken = Cryptographer.createToken(data, RT_SECRET);
       const accessToken = Cryptographer.createToken(data, AT_SECRET);
+
+      await User.setToken(user.id, refreshToken);
 
       return { refreshToken, accessToken };
     } catch (error) {
@@ -89,12 +85,14 @@ class AuthService {
       }
 
       let refreshToken: string;
+      let userId: string = "";
       try {
-        const user = await User.getUserCredentials(data.email!);
+        const user = await User.getBy({ email: data.email! });
         refreshToken = Cryptographer.createToken(
           { userid: user.id },
           RT_SECRET
         );
+        userId = user.id;
       } catch (error) {
         const { email, given_name, family_name, picture } = data;
         const user = await User.save({
@@ -109,7 +107,10 @@ class AuthService {
           { userid: user.id },
           RT_SECRET
         );
+        userId = user.id;
       }
+
+      await User.setToken(userId, refreshToken);
 
       return refreshToken;
     } catch (error) {

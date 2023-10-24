@@ -2,15 +2,19 @@ import { logger, prisma } from "../configs";
 import { IRegisterCredentials } from "../types";
 import { APIError } from "../utils";
 
-class User {
-  async getUserById(id: string) {
-    try {
-      if (!id) {
-        throw new APIError(400, "user id is required");
-      }
+interface IUserQuery {
+  id?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  token?: string;
+}
 
+class User {
+  async getBy(query: IUserQuery) {
+    try {
       const user = await prisma.user.findFirst({
-        where: { id },
+        where: query,
         select: {
           id: true,
           first_name: true,
@@ -54,6 +58,14 @@ class User {
 
   async save(data: IRegisterCredentials) {
     try {
+      const user = await prisma.user.findFirst({
+        where: { email: data.email },
+      });
+
+      if (user) {
+        throw new APIError(400, "Email is already in use");
+      }
+
       const result = await prisma.user.create({
         data,
         select: {
@@ -61,6 +73,19 @@ class User {
         },
       });
       logger.info("User registered");
+      return result;
+    } catch (error) {
+      throw APIError.get(error);
+    }
+  }
+
+  async setToken(id: string, token: string | null) {
+    try {
+      const result = await prisma.user.update({
+        where: { id },
+        data: { token },
+      });
+
       return result;
     } catch (error) {
       throw APIError.get(error);

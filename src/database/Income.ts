@@ -101,6 +101,13 @@ class Income {
           user_id: userId,
           created_at: { gte: from, lte: to },
         },
+        select: {
+          date: true,
+          month: true,
+          year: true,
+          nominal: true,
+          information: true,
+        },
       });
 
       return incomes;

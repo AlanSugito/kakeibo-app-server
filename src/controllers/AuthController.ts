@@ -45,8 +45,31 @@ class AuthController {
       const refreshToken = await AuthService.loginWithOAuth2(code as string);
       res.cookie("rt", refreshToken, { httpOnly: true, sameSite: true });
 
-      // res.redirect("http://localhost:5173")
-      res.status(200).json({ message: "successfully logged in" });
+      res.status(300).redirect("http://localhost:5173");
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { rt } = req.cookies;
+
+      if (!rt) {
+        res.clearCookie("rt", { httpOnly: true });
+        return res.sendStatus(204);
+      }
+
+      try {
+        const user = await User.getBy({ token: rt });
+        await User.setToken(user.id, null);
+      } catch (error) {
+        res.clearCookie("rt", { httpOnly: true });
+        return res.sendStatus(204);
+      }
+
+      res.clearCookie("rt", { httpOnly: true });
+      return res.sendStatus(204);
     } catch (error) {
       next(error);
     }
